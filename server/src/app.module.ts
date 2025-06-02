@@ -11,7 +11,7 @@ import { UserEntity } from './auth/entities/user.entity';
       port: 5432,
       username: 'postgres',
       password: 'Fhntv2004',
-      database: 'dem-ktk-nest',
+      database: 'server',
       entities: [UserEntity],
       synchronize: true,
     }),
