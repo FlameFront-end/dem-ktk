@@ -22,6 +22,9 @@ export class ApplicationEntity {
   address: string;
 
   @Column()
+  fullName: string;
+
+  @Column()
   contactPhone: string;
 
   @Column()
@@ -46,6 +49,9 @@ export class ApplicationEntity {
 
   @Column({ default: 'pending' })
   status: string;
+
+  @Column({ nullable: true })
+  cancelReason: string;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;

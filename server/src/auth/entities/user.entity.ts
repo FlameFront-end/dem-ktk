@@ -28,6 +28,9 @@ export class UserEntity {
   @Column()
   password: string;
 
+  @Column({ default: false })
+  isAdmin: boolean;
+
   @OneToMany(() => ApplicationEntity, (application) => application.user)
   applications: ApplicationEntity[];
 }

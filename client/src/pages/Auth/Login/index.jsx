@@ -24,7 +24,13 @@ export const Login = () => {
         window.localStorage.setItem("user", userString);
         window.localStorage.setItem("token", r.data.token);
 
-        navigate("/applications/list");
+        console.log("r.data", r.data);
+
+        if (r.data.isAdmin) {
+          navigate("/admin");
+        } else {
+          navigate("/applications/list");
+        }
 
         toast.success("Успешная авторизация");
       });
@@ -34,11 +40,7 @@ export const Login = () => {
     <form onSubmit={handleSubmit} className={s.container}>
       <div className={s.wrapper}>
         <h1 className={s.title}>Вход в аккаунт</h1>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <input value={email} onChange={(e) => setEmail(e.target.value)} />
         <input
           type="password"
           value={password}

@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateApplicationDto } from './dto/create-application.dto';
 import { ApplicationEntity } from './entities/application.entity';
 import { UserEntity } from '../auth/entities/user.entity';
+import { UpdateApplicationDto } from './dto/update-application.dto';
 
 @Injectable()
 export class ApplicationService {
@@ -36,5 +37,28 @@ export class ApplicationService {
       where: { user: { id: userId } },
       order: { createdAt: 'DESC' },
     });
+  }
+
+  async findAllWithUsers() {
+    return this.applicationRepository.find({
+      relations: ['user'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  async updateStatus(id: number, updateApplicationDto: UpdateApplicationDto) {
+    const application = await this.applicationRepository.findOne({
+      where: { id },
+    });
+    if (!application) {
+      throw new NotFoundException('Заявка не найдена');
+    }
+
+    application.status = updateApplicationDto.status;
+    if (updateApplicationDto.cancelReason) {
+      application.cancelReason = updateApplicationDto.cancelReason;
+    }
+
+    return this.applicationRepository.save(application);
   }
 }

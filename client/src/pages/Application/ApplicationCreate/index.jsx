@@ -8,6 +8,7 @@ export const ApplicationCreate = () => {
   const user = JSON.parse(window.localStorage.getItem("user"));
 
   const [formData, setFormData] = useState({
+    fullName: user?.fullName || "",
     address: "",
     contactPhone: user?.phone || "",
     desiredDate: "",
@@ -35,6 +36,7 @@ export const ApplicationCreate = () => {
       .then(() => {
         toast.success("Заявка успешно создана!");
         setFormData({
+          fullName: user?.fullName || "",
           address: "",
           contactPhone: user?.phone || "",
           desiredDate: "",

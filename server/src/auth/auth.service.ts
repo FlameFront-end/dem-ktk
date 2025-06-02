@@ -37,7 +37,7 @@ export class AuthService {
   }
 
   async login(user: IUser) {
-    const { id, email, phone, fullName, username } = user;
+    const { id, email, phone, fullName, username, isAdmin } = user;
 
     return {
       id,
@@ -45,6 +45,7 @@ export class AuthService {
       phone,
       username,
       email,
+      isAdmin,
       token: this.jwtService.sign({ id: user.id, email: user.email }),
     };
   }
