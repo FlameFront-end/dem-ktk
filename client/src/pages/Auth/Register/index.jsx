@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { BASE_SERVER_URL } from "../../../utils/constants.js";
 import s from "../Auth.module.scss";
 
@@ -27,17 +27,22 @@ export const Register = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    void axios.post(`${BASE_SERVER_URL}/auth/register`, formData).then(() => {
-      toast.success("Успешная регистрация");
+    void axios
+      .post(`${BASE_SERVER_URL}/auth/register`, formData)
+      .then(() => {
+        toast.success("Успешная регистрация");
 
-      navigate("/auth/login");
-    });
+        navigate("/auth/login");
+      })
+      .catch(() => {
+        toast.error("Что-то пошло не так");
+      });
   };
 
   return (
     <form onSubmit={handleSubmit} className={s.container}>
       <div className={s.wrapper}>
-        <h1 className={s.title}>Регистрация</h1>
+        <h1 className={s.title}>Регистрация аккаунта</h1>
 
         <input
           type="text"
@@ -78,6 +83,8 @@ export const Register = () => {
           onChange={handleChange}
           placeholder="Пароль"
         />
+
+        <Link to="/auth/login">Уже есть аккаунт? Войти</Link>
 
         <button type="submit">Зарегистрироваться</button>
       </div>

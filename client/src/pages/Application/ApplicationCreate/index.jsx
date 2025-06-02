@@ -44,6 +44,9 @@ export const ApplicationCreate = () => {
           serviceType: "general_cleaning",
           paymentType: "cash",
         });
+      })
+      .catch(() => {
+        toast.error("Что-то пошло не так");
       });
   };
 

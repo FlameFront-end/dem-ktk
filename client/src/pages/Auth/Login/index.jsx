@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import instance from "../../../core/api.js";
 import s from "../Auth.module.scss";
 
@@ -33,6 +33,12 @@ export const Login = () => {
         }
 
         toast.success("Успешная авторизация");
+      })
+      .catch((r) => {
+        if (r.status === 401) {
+          return toast.error("Не верная почта или пароль");
+        }
+        toast.error("Что-то пошло не так");
       });
   };
 
@@ -46,6 +52,8 @@ export const Login = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+
+        <Link to="/auth/register">Нет аккаунта? Зарегистрироваться</Link>
 
         <button type="submit">Войти</button>
       </div>
