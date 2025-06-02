@@ -1,8 +1,7 @@
 import { useState } from "react";
-import axios from "axios";
-import { BASE_SERVER_URL } from "../../../utils/constants.js";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import instance from "../../../core/api.js";
 import s from "../Auth.module.scss";
 
 export const Login = () => {
@@ -14,19 +13,20 @@ export const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    void axios
-      .post(`${BASE_SERVER_URL}/auth/login`, {
+    void instance
+      .post("/auth/login", {
         email,
         password,
       })
       .then((r) => {
-        toast.success("Успешная авторизация");
-
         const userString = JSON.stringify(r.data);
 
         window.localStorage.setItem("user", userString);
+        window.localStorage.setItem("token", r.data.token);
 
-        navigate("/auth/login");
+        navigate("/applications/list");
+
+        toast.success("Успешная авторизация");
       });
   };
 

@@ -1,0 +1,40 @@
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CreateApplicationDto } from './dto/create-application.dto';
+import { ApplicationEntity } from './entities/application.entity';
+import { UserEntity } from '../auth/entities/user.entity';
+
+@Injectable()
+export class ApplicationService {
+  constructor(
+    @InjectRepository(ApplicationEntity)
+    private applicationRepository: Repository<ApplicationEntity>,
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>,
+  ) {}
+
+  async create(
+    createApplicationDto: CreateApplicationDto,
+    userId: number,
+  ): Promise<ApplicationEntity> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const application = this.applicationRepository.create({
+      ...createApplicationDto,
+      user,
+    });
+
+    return this.applicationRepository.save(application);
+  }
+
+  async findAllByUser(userId: number): Promise<ApplicationEntity[]> {
+    return this.applicationRepository.find({
+      where: { user: { id: userId } },
+      order: { createdAt: 'DESC' },
+    });
+  }
+}
