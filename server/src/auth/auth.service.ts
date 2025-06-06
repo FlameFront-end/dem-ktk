@@ -1,56 +1,39 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import * as argon2 from 'argon2';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
 import { RegisterDto } from './dto/register.dto';
-import { IUser } from '../types';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
-
-    private readonly jwtService: JwtService,
   ) {}
 
   async register(dto: RegisterDto) {
-    const hash = await argon2.hash(dto.password);
-
-    return this.userRepository.save({ ...dto, password: hash });
+    return this.userRepository.save({ ...dto });
   }
 
-  async validateUser(email: string, password: string) {
-    const user = await this.findOneByEmail(email);
+  async login(dto: LoginDto) {
+    const user = await this.userRepository.findOne({
+      where: { email: dto.email },
+    });
 
-    if (user) {
-      const passwordIsMatch = await argon2.verify(user.password, password);
-
-      if (user && passwordIsMatch) {
-        return user;
-      }
+    if (!user) {
+      throw new HttpException(
+        'Пользователь с таким email не найден',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
-    throw new UnauthorizedException('Неверная почта или пароль!');
-  }
+    const passwordIsMatch = user.password === dto.password;
 
-  async login(user: IUser) {
-    const { id, email, phone, fullName, username, isAdmin } = user;
+    if (!passwordIsMatch) {
+      throw new HttpException('Неверный пароль', HttpStatus.UNAUTHORIZED);
+    }
 
-    return {
-      id,
-      fullName,
-      phone,
-      username,
-      email,
-      isAdmin,
-      token: this.jwtService.sign({ id: user.id, email: user.email }),
-    };
-  }
-
-  async findOneByEmail(email: string) {
-    return await this.userRepository.findOne({ where: { email } });
+    return user;
   }
 }

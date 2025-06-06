@@ -9,7 +9,7 @@
     "lint": "eslint --ext .tsx --ext .ts src/"
   },
   "dependencies": {
-    "antd": "^5.12.1",
+    "antd": "^5.25.4",
     "axios": "^1.9.0",
     "dayjs": "^1.11.13",
     "js-cookie": "^3.0.5",

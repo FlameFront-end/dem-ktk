@@ -1,25 +1,28 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateApplicationDto } from './dto/create-application.dto';
 import { ApplicationEntity } from './entities/application.entity';
 import { UserEntity } from '../auth/entities/user.entity';
 import { UpdateApplicationDto } from './dto/update-application.dto';
+import { CreateApplicationDto } from './dto/create-application.dto';
 
 @Injectable()
 export class ApplicationService {
   constructor(
     @InjectRepository(ApplicationEntity)
     private applicationRepository: Repository<ApplicationEntity>,
+
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
   ) {}
 
   async create(
     createApplicationDto: CreateApplicationDto,
-    userId: number,
   ): Promise<ApplicationEntity> {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const user = await this.userRepository.findOne({
+      where: { id: createApplicationDto.userId },
+    });
+
     if (!user) {
       throw new Error('User not found');
     }
@@ -50,11 +53,13 @@ export class ApplicationService {
     const application = await this.applicationRepository.findOne({
       where: { id },
     });
+
     if (!application) {
       throw new NotFoundException('Заявка не найдена');
     }
 
     application.status = updateApplicationDto.status;
+
     if (updateApplicationDto.cancelReason) {
       application.cancelReason = updateApplicationDto.cancelReason;
     }

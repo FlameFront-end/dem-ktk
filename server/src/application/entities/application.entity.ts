@@ -1,17 +1,19 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  CreateDateColumn,
+} from 'typeorm';
 import { UserEntity } from '../../auth/entities/user.entity';
 
-export enum ServiceType {
-  GENERAL_CLEANING = 'general_cleaning',
-  DEEP_CLEANING = 'deep_cleaning',
-  POST_CONSTRUCTION = 'post_construction',
-  DRY_CLEANING = 'dry_cleaning',
-}
+export type ServiceType =
+  | 'general_cleaning'
+  | 'deep_cleaning'
+  | 'post_construction'
+  | 'dry_cleaning';
 
-export enum PaymentType {
-  CASH = 'cash',
-  CARD = 'card',
-}
+export type PaymentType = 'cash' | 'card';
 
 @Entity('application')
 export class ApplicationEntity {
@@ -33,18 +35,10 @@ export class ApplicationEntity {
   @Column()
   desiredTime: string;
 
-  @Column({
-    type: 'enum',
-    enum: ServiceType,
-    default: ServiceType.GENERAL_CLEANING,
-  })
+  @Column({ default: 'general_cleaning' })
   serviceType: ServiceType;
 
-  @Column({
-    type: 'enum',
-    enum: PaymentType,
-    default: PaymentType.CASH,
-  })
+  @Column({ default: 'card' })
   paymentType: PaymentType;
 
   @Column({ default: 'pending' })
@@ -53,7 +47,7 @@ export class ApplicationEntity {
   @Column({ nullable: true })
   cancelReason: string;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @CreateDateColumn()
   createdAt: Date;
 
   @ManyToOne(() => UserEntity, (user) => user.applications)

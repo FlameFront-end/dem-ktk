@@ -1,18 +1,7 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  UseGuards,
-  Request,
-  Patch,
-  Param,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
 import { ApplicationService } from './application.service';
 import { CreateApplicationDto } from './dto/create-application.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { AdminGuard } from '../auth/entities/admin.guard';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { UpdateApplicationDto } from './dto/update-application.dto';
 
 @ApiTags('applications')
@@ -20,28 +9,23 @@ import { UpdateApplicationDto } from './dto/update-application.dto';
 export class ApplicationController {
   constructor(private readonly applicationService: ApplicationService) {}
 
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
+  @ApiBody({ type: CreateApplicationDto })
   @Post()
-  create(@Body() createApplicationDto: CreateApplicationDto, @Request() req) {
-    return this.applicationService.create(createApplicationDto, req.user.id);
+  create(@Body() createApplicationDto: CreateApplicationDto) {
+    return this.applicationService.create(createApplicationDto);
   }
 
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  @Get('my')
-  findAllByUser(@Request() req) {
-    return this.applicationService.findAllByUser(req.user.id);
+  @Get('my/:id')
+  findAllByUser(@Param('id') id: number) {
+    return this.applicationService.findAllByUser(id);
   }
 
-  @UseGuards(JwtAuthGuard, AdminGuard)
   @Get('admin/all')
   async findAllForAdmin() {
     return this.applicationService.findAllWithUsers();
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard, AdminGuard)
   async updateStatus(
     @Param('id') id: number,
     @Body() updateApplicationDto: UpdateApplicationDto,

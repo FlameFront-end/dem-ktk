@@ -5,20 +5,22 @@ import {
   useLocation,
   Navigate,
 } from "react-router-dom";
-import routes from "./utils/routes.jsx";
+import routes from "./router/routes.jsx";
 import { useEffect } from "react";
+import { Button } from "antd";
 
 const App = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
   const user = JSON.parse(localStorage.getItem("user"));
-  const isLoggedIn = localStorage.getItem("token");
+  const isLoggedIn = !!localStorage.getItem("userId");
   const isAdmin = user?.isAdmin;
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
     localStorage.removeItem("user");
+
     navigate("/auth/login");
   };
 
@@ -26,32 +28,32 @@ const App = () => {
     location.pathname === "/auth/login" ||
     location.pathname === "/auth/register";
 
-  useEffect(() => {
-    if (!isLoggedIn && !isAuthPage) {
-      navigate("/auth/login");
-    } else if (isLoggedIn && isAuthPage) {
-      navigate(isAdmin ? "/admin" : "/applications/list");
-    } else if (isLoggedIn && !isAuthPage) {
-      if (location.pathname.startsWith("/admin") && !isAdmin) {
-        navigate("/applications/list");
-      } else if (location.pathname.startsWith("/applications") && isAdmin) {
-        navigate("/admin");
-      }
-    }
-  }, [isLoggedIn, isAdmin, isAuthPage, location.pathname, navigate]);
+  // useEffect(() => {
+  //   if (!isLoggedIn && !isAuthPage) {
+  //     navigate("/auth/login");
+  //   } else if (isLoggedIn && isAuthPage) {
+  //     navigate(isAdmin ? "/admin" : "/applications/list");
+  //   }
+  // }, [isLoggedIn, isAdmin, isAuthPage, location.pathname, navigate]);
 
   return (
     <div className="app">
       {!isAuthPage && isLoggedIn && (
-        <button onClick={handleLogout} className="logoutButton">
+        <Button
+          onClick={handleLogout}
+          variant="solid"
+          className="logoutButton"
+          color="danger"
+        >
           Выйти
-        </button>
+        </Button>
       )}
 
       <Routes>
-        {routes.map(({ path, element }) => (
-          <Route key={path} path={path} element={element} />
+        {routes.map((route) => (
+          <Route key={route.path} path={route.path} element={route.element} />
         ))}
+
         <Route
           path="*"
           element={

@@ -1,8 +1,8 @@
 import { Login } from "../pages/Auth/Login";
-import { Register } from "../pages/Auth/Register/index.jsx";
-import { ApplicationCreate } from "../pages/Application/ApplicationCreate/index.jsx";
-import { ApplicationList } from "../pages/Application/ApplicationList/index.jsx";
-import { AdminDashboard } from "../pages/AdminDashboard/index.jsx";
+import { Register } from "../pages/Auth/Register";
+import { ApplicationCreate } from "../pages/Application/ApplicationCreate";
+import { ApplicationList } from "../pages/Application/ApplicationList";
+import { AdminDashboard } from "../pages/Admin/AdminDashboard.jsx";
 
 const routes = [
   { path: "/auth/login", element: <Login /> },
